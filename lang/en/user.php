@@ -12,8 +12,8 @@ return [
     |
     */
 
-    'administrator' => "Can't create username: Administrator",
-    'create_users_success' => "Success create New User",
+    'check_success' => "Check User Successful",
+    'check_fails' => "Error: User Can't be Check",
     'create_users_fails' => "Error: User can't be created",
     'signin_success' => "Success sign-in application",
     'signin_fails' => "Error: These credentials do not match our records.",

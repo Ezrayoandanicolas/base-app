@@ -73,7 +73,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Create Custom User
+     * Create Custom User (Token)
      */
     public function createCustomUser(Request $request)
     {
@@ -157,7 +157,7 @@ class AuthController extends Controller
                 if (!Auth::attempt($request->only(['email', 'password']))){
                     return response()->json([
                         'status' => false,
-                        'message' => __('auth.failed')
+                        'message' => __('auth.signin_fails')
                     ], 401);
                 } else {
                     $mode = 'email';

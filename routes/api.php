@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\User;
@@ -41,6 +42,12 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         // Prefix V1
         Route::prefix('auth')->group(function () {
+            // Check User
+            Route::get('checkUser', [UserController::class, 'checkUser']);
+            Route::get('checkRole', [UserController::class, 'checkRole']);
+            Route::get('checkPermission', [UserController::class, 'checkPermission']);
+
+            // Create New User Custom
             Route::post('createUser', [AuthController::class, 'createCustomUser']);
         });
     });
