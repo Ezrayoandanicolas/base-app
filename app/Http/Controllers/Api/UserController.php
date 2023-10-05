@@ -62,7 +62,7 @@ class UserController extends Controller
     {
         try {
             $user = Auth()->user();
-            $user->getRoleNames();
+            $user->getAllPermissions();
             if ($user) :
                 return response()->json([
                     'status' => true,

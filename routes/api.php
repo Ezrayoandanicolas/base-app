@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ArticleController;
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\UserController;
 use Illuminate\Http\Request;
@@ -17,25 +18,16 @@ use Spatie\Permission\Models\Permission;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-// Route::get('/testPermission/{id}', function($id) {
-//     $user = User::find($id);
-//     $getPermission = Permission::all();
-//     $user->syncPermissions($getPermission);
-//     $permissions = $user->getAllPermissions(); // Mendapatkan semua izin pengguna
-//     return response()->json(['permissions' => $permissions]);
-// });
-
-// Route::post('/auth/createUser', [AuthController::class, 'create']);
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
 
 Route::prefix('v1')->group(function () {
     // Group Guest
     Route::prefix('guest')->group(function () {
+        // Auth
         Route::post('signIn', [AuthController::class, 'signIn']);
         Route::post('createUser', [AuthController::class, 'createMember']);
+
+        // Article Umum
+        Route::get('getArticle', [ArticleController::class, 'index']);
     });
 
     // Group Middleware Sanctum
@@ -49,6 +41,9 @@ Route::prefix('v1')->group(function () {
 
             // Create New User Custom
             Route::post('createUser', [AuthController::class, 'createCustomUser']);
+
+            // Post Article
+            Route::post('createArticle', [ArticleController::class, 'store'])->middleware('permission:create-post');
         });
     });
 });
