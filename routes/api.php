@@ -19,6 +19,19 @@ use Spatie\Permission\Models\Permission;
 |
 */
 
+Route::get('/testPermission/{id}', function($id) {
+    $user = User::find($id);
+    foreach ($user->getAllPermissions() as $permission) {
+        $user->revokePermissionTo($permission);
+    }
+    // $user->givePermissionTo(['edit-post']);
+    // $user->syncPermissions([]);
+    // $getPermission = Permission::all();
+    // $user->syncPermissions($getPermission);
+    $permissions = $user->getAllPermissions(); // Mendapatkan semua izin pengguna
+    return response()->json(['permissions' => $permissions]);
+});
+
 Route::prefix('v1')->group(function () {
     // Group Guest
     Route::prefix('guest')->group(function () {
@@ -26,7 +39,7 @@ Route::prefix('v1')->group(function () {
         Route::post('signIn', [AuthController::class, 'signIn']);
         Route::post('createUser', [AuthController::class, 'createMember']);
 
-        // Article Umum
+        // Article
         Route::get('getArticle', [ArticleController::class, 'index']);
     });
 
@@ -41,9 +54,12 @@ Route::prefix('v1')->group(function () {
 
             // Create New User Custom
             Route::post('createUser', [AuthController::class, 'createCustomUser']);
+            Route::post('updateUser/{id}', [AuthController::class, 'updateUser']);
 
             // Post Article
             Route::post('createArticle', [ArticleController::class, 'store'])->middleware('permission:create-post');
+            Route::post('updateArticle/{slug}', [ArticleController::class, 'update'])->middleware('permission:edit-post');
+            Route::delete('deleteArticle/{slug}', [ArticleController::class, 'destroy'])->middleware('permission:delete-post');
         });
     });
 });

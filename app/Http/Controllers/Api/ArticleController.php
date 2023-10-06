@@ -80,4 +80,89 @@ class ArticleController extends Controller
         }
     }
 
+    /**
+     * Update Article
+     */
+    public function update(Request $request, $slug)
+    {
+        try {
+            // Validasi input sesuai kebutuhan Anda
+            $request->validate([
+                'title' => 'required|string|max:255',
+                'content' => 'required|string',
+                'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar (opsional).
+            ]);
+
+            // Temukan artikel yang akan diperbarui berdasarkan slug.
+            $article = Article::where('slug', $slug)->firstOrFail();
+
+            // Perbarui data artikel.
+            $article->title = $request->input('title');
+            $article->content = $request->input('content');
+
+            // Periksa apakah ada file gambar baru yang diunggah.
+            if ($request->hasFile('image')) {
+                // Hapus gambar utama dan thumbnail lama jika ada.
+                Storage::disk('public')->delete($article->image);
+                Storage::disk('public')->delete($article->thumbnail);
+
+                // Simpan gambar utama yang baru.
+                $imagePath = $request->file('image')->store('images', 'public');
+                $article->image = $imagePath;
+
+                // Buat dan simpan thumbnail yang baru.
+                $thumbnail = Image::make(storage_path('app/public/' . $imagePath))
+                    ->fit(200, 200)
+                    ->encode();
+                $thumbnailPath = 'thumbnails/' . time() . '_' . $request->file('image')->getClientOriginalName();
+                Storage::disk('public')->put($thumbnailPath, $thumbnail);
+                $article->thumbnail = $thumbnailPath;
+            }
+
+            // Simpan perubahan dalam database.
+            $article->save();
+
+            return response()->json([
+                'status' => true,
+                'message' => __('article.update_success'),
+                'data' => $article,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Delete Article
+     */
+    public function destroy($slug)
+    {
+        try {
+            // Temukan artikel berdasarkan slug.
+            $article = Article::where('slug', $slug)->firstOrFail();
+
+            // Hapus gambar utama dan thumbnail dari penyimpanan.
+            Storage::disk('public')->delete($article->image);
+            Storage::disk('public')->delete($article->thumbnail);
+
+            // Hapus artikel dari database.
+            $article->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => __('article.delete_success'),
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage(),
+            ], 500);
+        }
+    }
+
+
+
 }

@@ -13,4 +13,6 @@ return [
     */
 
     'create_success' => "Berhasil tambah article.",
+    'update_success' => "Berhasil update article.",
+    'delete_success' => "Berhasil delete article.",
 ];

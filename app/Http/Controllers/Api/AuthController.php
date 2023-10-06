@@ -133,6 +133,59 @@ class AuthController extends Controller
     }
 
     /**
+     * Update User & Permission
+     */
+    public function updateUser(Request $request, $id, $permissions = [], $roles = [])
+    {
+        try {
+            // Ambil user yang akan diperbarui
+            $user = User::find($id);
+
+            if (!$user) :
+                return response()->json([
+                    'status' => false,
+                    'message' => __('auth.user_not_found')
+                ], 404);
+            endif;
+
+            // Perbarui informasi pengguna
+            $user->update([
+                'username' => $request->username,
+                'name' => $request->name,
+                'email' => $request->email,
+            ]);
+
+            // Berikan peran (roles) jika ada
+            if (!empty($request->roles)) {
+                $user->syncRoles($request->roles);
+            }
+
+            foreach ($user->getAllPermissions() as $permission) {
+                $user->revokePermissionTo($permission);
+            }
+
+            // Berikan izin (permissions) jika ada
+            if (!empty($request->permission)) {
+                $user->syncPermissions(['edit-post']);
+            }
+
+
+            return response()->json([
+                'status' => true,
+                'message' => __('auth.update_user_success'),
+                'data' => $user
+            ], 200);
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+
+    /**
      * Request Login
      */
     public function signIn(Request $request)
