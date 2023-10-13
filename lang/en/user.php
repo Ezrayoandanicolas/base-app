@@ -13,6 +13,8 @@ return [
     */
 
     'check_success' => "Check User Successful",
+    'role_success' => "Success get all Roles",
+    'permissions_success' => "Success get all Permissions",
     'check_fails' => "Error: User Can't be Check",
     'create_users_fails' => "Error: User can't be created",
     'signin_success' => "Success sign-in application",

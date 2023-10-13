@@ -17,4 +17,6 @@ return [
     'create_users_fails' => 'Error: User tidak dapat dibuat',
     'signin_success' => "Berhasil masuk",
     'signin_fails' => "Error: Username & Password tidak sesuai!",
+    'check_token_success' => "Token ditemukan",
+    'check_token_fails' => "Error: Token tidak ditemukan!",
 ];

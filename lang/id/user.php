@@ -13,6 +13,8 @@ return [
     */
 
     'check_success' => "Pengguna berhasil dicek",
+    'role_success' => "Berhasil ambil Roles Users",
+    'permissions_success' => "Berhasil ambil Permissions Users",
     'check_fails' => "Error: Pengguna tidak dapat diperiksa",
     'create_users_fails' => "Error: User can't be created",
     'signin_success' => "Success sign-in application",

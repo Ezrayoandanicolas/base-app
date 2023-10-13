@@ -17,11 +17,68 @@ class ArticleController extends Controller
     public function index()
     {
         try {
-            $article = Article::with('users')->get();
+            $articles = Article::with('users')->get();
+
+            // Gunakan foreach untuk mengakses setiap artikel
+            foreach ($articles as $article) {
+                // Tambahkan properti 'imagesUrl' ke setiap artikel
+                $article['imageUrl'] = asset('storage/' . $article->image);
+            }
 
             return response()->json([
                 'status' => true,
-                'message' => __('article.create_success'),
+                'message' => __('article.get_success'),
+                'data' => $articles,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Count Articles (Token)
+     */
+    public function countArticles()
+    {
+        try {
+            $articles = Article::with('users')->get();
+            $articleCount = $articles->count();
+
+            return response()->json([
+                'status' => true,
+                'message' => __('article.get_success'),
+                'count' => $articleCount,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Read Slug Article
+     */
+    public function readArticle($slug)
+    {
+        try {
+            $article = Article::with('users')->where('slug', $slug)->first();
+            $article->imagesUrl = asset('storage/' . $article->image);
+
+            if (!$article) {
+                return response()->json([
+                    'status' => false,
+                    'message' => __('article.get_fails')
+                ], 401);
+            }
+
+            return response()->json([
+                'status' => true,
+                'message' => __('article.get_success'),
                 'data' => $article,
             ], 200);
         } catch (\Throwable $th) {
@@ -37,6 +94,7 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
+        // return response()->json($request->all(), 200);
         try {
             $request->validate([
                 'title' => 'required|string|max:255',
@@ -88,9 +146,9 @@ class ArticleController extends Controller
         try {
             // Validasi input sesuai kebutuhan Anda
             $request->validate([
-                'title' => 'required|string|max:255',
-                'content' => 'required|string',
-                'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar (opsional).
+                // 'title' => 'required|string|max:255',
+                // 'content' => 'required|string',
+                // 'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048', // Validasi gambar (opsional).
             ]);
 
             // Temukan artikel yang akan diperbarui berdasarkan slug.

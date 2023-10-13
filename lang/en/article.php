@@ -12,7 +12,9 @@ return [
     |
     */
 
-    'create_success' => "Success create article.",
-    'update_success' => "Success update article.",
-    'delete_success' => "Success delete article.",
+    'get_success'       => "Success get article.",
+    'get_fails'         => "Article failed to retrieve.",
+    'create_success'    => "Success create article.",
+    'update_success'    => "Success update article.",
+    'delete_success'    => "Success delete article.",
 ];

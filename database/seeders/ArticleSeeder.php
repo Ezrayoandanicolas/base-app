@@ -14,6 +14,6 @@ class ArticleSeeder extends Seeder
      */
     public function run(): void
     {
-        Article::create(['title' => 'Title 1 Article', 'slug' => Str::slug(date('Y-m-d').'-'.'Title 1 Article'), 'content' => 'Hello Ges ini article Pertama Saya', 'image' => '121241234.png', 'user_id' => 1]);
+        // Article::create(['title' => 'Title 1 Article', 'slug' => Str::slug(date('Y-m-d').'-'.'Title 1 Article'), 'content' => 'Hello Ges ini article Pertama Saya', 'image' => '121241234.png', 'user_id' => 1]);
     }
 }

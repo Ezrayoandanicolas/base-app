@@ -12,7 +12,9 @@ return [
     |
     */
 
-    'create_success' => "Berhasil tambah article.",
-    'update_success' => "Berhasil update article.",
-    'delete_success' => "Berhasil delete article.",
+    'get_success'       => "Berhasil ambil artikel.",
+    'get_fails'         => "Artikel gagal diambil.",
+    'create_success'    => "Berhasil tambah artikel.",
+    'update_success'    => "Berhasil update artikel.",
+    'delete_success'    => "Berhasil delete artikel.",
 ];

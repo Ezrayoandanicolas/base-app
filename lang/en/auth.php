@@ -17,4 +17,6 @@ return [
     'create_users_fails' => "Error: User can't be created",
     'signin_success' => "Success sign-in application",
     'signin_fails' => "Error: These credentials do not match our records.",
+    'check_token_success' => "Success check Token",
+    'check_token_fails' => "Error: Token Not Found.",
 ];

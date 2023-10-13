@@ -21,9 +21,9 @@ use Spatie\Permission\Models\Permission;
 
 Route::get('/testPermission/{id}', function($id) {
     $user = User::find($id);
-    foreach ($user->getAllPermissions() as $permission) {
-        $user->revokePermissionTo($permission);
-    }
+    // foreach ($user->getAllPermissions() as $permission) {
+    //     $user->revokePermissionTo($permission);
+    // }
     // $user->givePermissionTo(['edit-post']);
     // $user->syncPermissions([]);
     // $getPermission = Permission::all();
@@ -41,12 +41,25 @@ Route::prefix('v1')->group(function () {
 
         // Article
         Route::get('getArticle', [ArticleController::class, 'index']);
+        Route::get('getArticle/{slug}', [ArticleController::class, 'readArticle']);
     });
 
     // Group Middleware Sanctum
     Route::middleware('auth:sanctum')->group(function () {
         // Prefix V1
         Route::prefix('auth')->group(function () {
+            // Logout
+            Route::post('logout', [AuthController::class, 'logout']);
+
+            // Count
+            Route::get('countUsers', [UserController::class, 'countUsers']);
+            Route::get('countArticles', [ArticleController::class, 'countArticles']);
+
+            // Get All Users
+            Route::get('getUsers', [UserController::class, 'getUsers']);
+            Route::get('getRoles', [UserController::class, 'getRoles']);
+            Route::get('getPermissions', [UserController::class, 'getPermissions']);
+
             // Check User
             Route::get('checkUser', [UserController::class, 'checkUser']);
             Route::get('checkRole', [UserController::class, 'checkRole']);
@@ -55,6 +68,7 @@ Route::prefix('v1')->group(function () {
             // Create New User Custom
             Route::post('createUser', [AuthController::class, 'createCustomUser']);
             Route::post('updateUser/{id}', [AuthController::class, 'updateUser']);
+            Route::delete('deleteUser/{id}', [AuthController::class, 'destroy']);
 
             // Post Article
             Route::post('createArticle', [ArticleController::class, 'store'])->middleware('permission:create-post');

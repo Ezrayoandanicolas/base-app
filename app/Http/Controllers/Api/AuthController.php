@@ -111,8 +111,20 @@ class AuthController extends Controller
                 'password' => Hash::make($request->password),
             ]);
 
+            if (!empty($request->roles)) {
+                $user->syncRoles($request->roles);
+            }
+
+            foreach ($user->getAllPermissions() as $permission) {
+                $user->revokePermissionTo($permission);
+            }
+
+            // Berikan izin (permissions) jika ada
+            if (!empty($request->permissions)) {
+                $user->syncPermissions($request->permissions);
+            }
+
             if ($user) :
-                $user->assignRole('member');
                 return response()->json([
                     'status' => true,
                     'message' => __('auth.create_users_success')
@@ -148,13 +160,15 @@ class AuthController extends Controller
                 ], 404);
             endif;
 
-            // Perbarui informasi pengguna
-            $user->update([
-                'username' => $request->username,
-                'name' => $request->name,
-                'email' => $request->email,
-            ]);
+             // Check apakah ada pergantian Password
+            if (!empty($request->password)) {
+                $request['password'] = Hash::make($request->password);
+            }
 
+            // Perbarui informasi pengguna
+            $user->update($request->all());
+
+            // return response()->json($user, 200);
             // Berikan peran (roles) jika ada
             if (!empty($request->roles)) {
                 $user->syncRoles($request->roles);
@@ -165,8 +179,8 @@ class AuthController extends Controller
             }
 
             // Berikan izin (permissions) jika ada
-            if (!empty($request->permission)) {
-                $user->syncPermissions(['edit-post']);
+            if (!empty($request->permissions)) {
+                $user->syncPermissions($request->permissions);
             }
 
 
@@ -229,7 +243,90 @@ class AuthController extends Controller
 
             return response()->json([
                 'status' => true,
-                'message' => $user->createToken("API TOKEN")->plainTextToken
+                'message' => __('auth.signin_success'),
+                'token' => $user->createToken("API TOKEN")->plainTextToken
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Check Token
+     */
+    public function checkToken(Request $request)
+    {
+        try {
+            if (Auth::check()) {
+                return response()->json([
+                    'status' => true,
+                    'message' => __('auth.check_token_success'),
+                ], 200);
+            }
+
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Destory Users
+     */
+
+     public function destroy($id) {
+        try {
+            // Find the user by ID
+            $user = User::find($id);
+
+            if (!$user) {
+                return response()->json([
+                    'status' => false,
+                    'message' => __('auth.user_not_found')
+                ], 404);
+            }
+
+            // Delete user's roles
+            $user->roles()->detach();
+
+            // Delete user's permissions
+            $user->permissions()->detach();
+
+            // Delete the user
+            $user->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => __('auth.delete_user_success'),
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => false,
+                'message' => $th->getMessage()
+            ], 500);
+        }
+     }
+
+    /**
+     * Logout the user and revoke the token.
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout(Request $request)
+    {
+        try {
+            // Revoke the user's current token
+            $request->user()->currentAccessToken()->delete();
+
+            return response()->json([
+                'status' => true,
+                'message' => __('auth.signout_success'),
             ], 200);
         } catch (\Throwable $th) {
             return response()->json([

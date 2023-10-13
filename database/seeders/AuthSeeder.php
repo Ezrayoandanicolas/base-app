@@ -14,7 +14,7 @@ class AuthSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::create(['username' => 'ezrayoandanicolas', 'name' => 'Ezra Yoanda Nicolas', 'email' => 'ezrayoandanicolas@gmail.com', 'password' => Hash::make('kawachi123')]);
-        $user->assignRole('member');
+        $user = User::create(['username' => 'admin', 'name' => 'Admin', 'email' => 'admin@gmail.com', 'password' => Hash::make('admin')]);
+        $user->assignRole('admin');
     }
 }
